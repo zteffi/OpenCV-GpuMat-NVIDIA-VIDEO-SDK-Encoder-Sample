@@ -42,8 +42,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/cudaimgproc.hpp>
-#include <opencv2/cudawarping.hpp>
-#include <opencv2/cudafilters.hpp>
 #include <opencv2/highgui.hpp>
 
 simplelogger::Logger *logger = simplelogger::LoggerFactory::CreateConsoleLogger();
@@ -258,43 +256,6 @@ void InitializeEncoder(EncoderClass &pEnc, NvEncoderInitParam encodeCLIOptions, 
     pEnc->CreateEncoder(&initializeParams);
 }
 
-void EncodeCuda2(int nWidth, int nHeight, NV_ENC_BUFFER_FORMAT eFormat, NvEncoderInitParam encodeCLIOptions, CUcontext cuContext, cv::cuda::GpuMat img, std::ofstream &fpOut)
-{
-    std::unique_ptr<NvEncoderCuda> pEnc(new NvEncoderCuda(cuContext, nWidth, nHeight, eFormat));
-
-    InitializeEncoder(pEnc, encodeCLIOptions, eFormat);
-
-    int nFrameSize = pEnc->GetFrameSize();
-    
-    int nFrame = 0;
-    for (int i = 0; i < 25*7; i++)
-    {
-        // Load the next frame from disk
-        //std::streamsize nRead = fpIn.read(reinterpret_cast<char*>(pHostFrame.get()), nFrameSize).gcount();
-        std::streamsize nRead = 0;
-        // For receiving encoded packets
-        std::vector<std::vector<uint8_t>> vPacket;
-      
-        const NvEncInputFrame* encoderInputFrame = pEnc->GetNextInputFrame();
-       
-
-        pEnc->EncodeFrame(vPacket);
-       
-        nFrame += (int)vPacket.size();
-        for (std::vector<uint8_t> &packet : vPacket)
-        {
-            // For each encoded packet
-            fpOut.write(reinterpret_cast<char*>(packet.data()), packet.size());
-        }
-        pEnc->EndEncode(vPacket);
-    }
-
-    pEnc->DestroyEncoder();
-
-    std::cout << "Total frames encoded: " << nFrame << std::endl;
-}
-
-
 void EncodeCuda(int nWidth, int nHeight, NvEncoderInitParam encodeCLIOptions, CUcontext cuContext, cv::cuda::GpuMat srcIn, std::ofstream& fpOut)
 {
     NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_ABGR;
@@ -308,14 +269,7 @@ void EncodeCuda(int nWidth, int nHeight, NvEncoderInitParam encodeCLIOptions, CU
     int last_frame = 15*25;
     for (int i = 0; i <= last_frame; i++)
     {
-        double blurPeriod = 14;
-        double blurMagnitude = 3.5;
-        double blurValue = sin(3.1415*(i - blurPeriod/2) / blurPeriod) * blurMagnitude + blurMagnitude;
-        auto gaussianBlur = cv::cuda::createGaussianFilter(srcIn.type(), srcIn.type(), cv::Size(9, 9), blurValue);
 
-        cv::cuda::GpuMat dst;
-        gaussianBlur->apply(srcIn, dst);
-        // Load the next frame from disk
         std::streamsize nRead = nFrameSize;
         // For receiving encoded packets
         std::vector<std::vector<uint8_t>> vPacket;
@@ -323,7 +277,7 @@ void EncodeCuda(int nWidth, int nHeight, NvEncoderInitParam encodeCLIOptions, CU
         if (i < last_frame)
         {
             const NvEncInputFrame* encoderInputFrame = pEnc->GetNextInputFrame();
-            NvEncoderCuda::CopyToDeviceFrame(cuContext, dst.data, 0, (CUdeviceptr)encoderInputFrame->inputPtr,
+            NvEncoderCuda::CopyToDeviceFrame(cuContext, srcIn.data, 0, (CUdeviceptr)encoderInputFrame->inputPtr,
                 (int)encoderInputFrame->pitch,
                 pEnc->GetEncodeWidth(),
                 pEnc->GetEncodeHeight(),
