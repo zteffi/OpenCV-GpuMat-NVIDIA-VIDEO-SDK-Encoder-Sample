@@ -256,7 +256,7 @@ void InitializeEncoder(EncoderClass &pEnc, NvEncoderInitParam encodeCLIOptions, 
     pEnc->CreateEncoder(&initializeParams);
 }
 
-void EncodeCuda(int nWidth, int nHeight, NvEncoderInitParam encodeCLIOptions, CUcontext cuContext, cv::cuda::GpuMat srcIn, std::ofstream& fpOut)
+void EncodeGpuMat(int nWidth, int nHeight, NvEncoderInitParam encodeCLIOptions, CUcontext cuContext, cv::cuda::GpuMat srcIn, std::ofstream& fpOut)
 {
     NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_ABGR;
 
@@ -360,7 +360,7 @@ int main(int argc, char **argv)
             throw std::invalid_argument(err.str());
         }
 
-        EncodeCuda(nWidth, nHeight, encodeCLIOptions, cuContext, srcImgDevice, fpOut);
+        EncodeGpuMat(nWidth, nHeight, encodeCLIOptions, cuContext, srcImgDevice, fpOut);
         
         fpOut.close();
 
