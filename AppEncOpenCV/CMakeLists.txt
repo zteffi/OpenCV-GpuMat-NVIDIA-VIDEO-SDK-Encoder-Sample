@@ -23,23 +23,16 @@ set(APP_SOURCES
 set(NV_ENC_SOURCES
  ${NV_ENC_DIR}/NvEncoder.cpp
  ${NV_ENC_DIR}/NvEncoderCuda.cpp
- ${NV_ENC_DIR}/NvEncoderOutputInVidMemCuda.cpp
 )
 
 set(NV_ENC_HDRS
  ${NV_ENC_DIR}/NvEncoder.h
  ${NV_ENC_DIR}/NvEncoderCuda.h
- ${NV_ENC_DIR}/NvEncoderOutputInVidMemCuda.h
  ${NVCODEC_PUBLIC_INTERFACE_DIR}/nvEncodeAPI.h
  ${NVCODEC_UTILS_DIR}/NvCodecUtils.h
  ${NVCODEC_UTILS_DIR}/NvEncoderCLIOptions.h
- ${NVCODEC_UTILS_DIR}/ColorSpace.h
 )
 
-set(NV_ENC_CUDA_UTILS
- ${NVCODEC_UTILS_DIR}/crc.cu
- ${NVCODEC_UTILS_DIR}/ColorSpace.cu
-)
 
 source_group( "headers" FILES ${NV_ENC_HDRS} )
 source_group( "sources" FILES ${APP_SOURCES} ${NV_ENC_SOURCES} ${NV_ENC_CUDA_UTILS})
@@ -57,7 +50,7 @@ if ( CMAKE_COMPILER_IS_GNUCC )
     endif()
 endif()
 
-cuda_add_executable(${PROJECT_NAME}  ${APP_SOURCES} ${NV_ENC_SOURCES} ${NV_ENC_CUDA_UTILS} ${NV_ENC_HDRS})
+cuda_add_executable(${PROJECT_NAME}  ${APP_SOURCES} ${NV_ENC_SOURCES} ${NV_ENC_HDRS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
