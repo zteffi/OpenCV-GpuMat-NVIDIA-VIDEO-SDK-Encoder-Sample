@@ -269,7 +269,6 @@ void EncodeGpuMat(int nWidth, int nHeight, NvEncoderInitParam encodeCLIOptions, 
     int last_frame = 15*25;
     for (int i = 0; i <= last_frame; i++)
     {
-
         std::streamsize nRead = nFrameSize;
         // For receiving encoded packets
         std::vector<std::vector<uint8_t>> vPacket;
@@ -330,8 +329,6 @@ int main(int argc, char **argv)
         srcImgDevice.upload(srcImgHost);
         cv::cuda::cvtColor(srcImgDevice, srcImgDevice, cv::ColorConversionCodes::COLOR_BGR2RGBA);
 
-        cv::Mat tst;
-        srcImgDevice.download(tst);
         ValidateResolution(nWidth, nHeight);
 
         ck(cuInit(0));
