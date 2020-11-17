@@ -6,3 +6,35 @@ Since `cv::cudacodec::VideoWriter` supports only deprecated `nvcuvnenc` library,
 * In `Video_Codec_SDK_*.*.*/Samples/CMakeLists.txt` include folder by adding  this line
 `add_subdirectory(AppEncode/AppEncOpenCV)`
 * Set `OpenCV_DIR` and build sample project with *cmake*
+
+# Usage
+`./AppEncOpenCV -i path_to_image.jpg -o video.mp4`
+
+Sample will produce 15 second video with input image as it's frames. Alternatively you can just check `EncodeGpuMat` function and use it in your application. Most important part is using `NV_ENC_BUFFER_FORMAT_ABGR` when initializing `NvEncoderCuda`. Then you can use `NvEncoderCuda::CopyToDeviceFrame` with `cv::GpuMat::data`  as `void* pSrcFrame`  argument.
+
+```c++
+
+cv::cuda::GpuMat srcIn;
+NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_ABGR;
+std::unique_ptr<NvEncoderCuda> pEnc(new NvEncoderCuda(cuContext, nWidth, nHeight, eFormat));
+
+...
+
+const NvEncInputFrame* encoderInputFrame = pEnc->GetNextInputFrame();
+
+NvEncoderCuda::CopyToDeviceFrame(
+	cuContext, 
+	srcIn.data, 
+	0, 
+	(CUdeviceptr)encoderInputFrame->inputPtr,
+	(int)encoderInputFrame->pitch,
+	pEnc->GetEncodeWidth(),
+	pEnc->GetEncodeHeight(),
+	CU_MEMORYTYPE_HOST,
+	encoderInputFrame->bufferFormat,
+	encoderInputFrame->chromaOffsets,
+	encoderInputFrame->numChromaPlanes);
+	
+pEnc->EncodeFrame(vPacket);
+
+```

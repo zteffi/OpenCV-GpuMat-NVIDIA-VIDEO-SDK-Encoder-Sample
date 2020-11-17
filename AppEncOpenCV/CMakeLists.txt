@@ -11,10 +11,8 @@ cmake_minimum_required(VERSION 3.7)
 
 project(AppEncOpenCV)
 
-string(REPLACE "\\" "/" OPENCV_PATH $ENV{LOMTEC_OPENCV_PATH})
 
-
-find_package(OpenCV REQUIRED PATHS $OPENCV_PATH)
+find_package(OpenCV REQUIRED PATHS $env:OPENCV_DIR)
 
 set(APP_SOURCES
  ${CMAKE_CURRENT_SOURCE_DIR}/AppEncOpenCV.cpp
