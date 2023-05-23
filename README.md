@@ -10,7 +10,7 @@ Since `cv::cudacodec::VideoWriter` supports only deprecated `nvcuvnenc` library,
 # Usage
 `./AppEncOpenCV -i path_to_image.jpg -o video.h264`
 
-Since the output is just the raw encoded video, we need to put it into some video container to view it in most media players, so just run
+Since the output (_video.h264_) is just raw H.264 frames, we need to put it into some video container to view it in most media players, so just run
 
 `ffmpeg -i video.h264 video.mp4`
 
