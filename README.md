@@ -1,5 +1,5 @@
 # OpenCV GpuMat & NVIDIA VIDEO SDK Encoder Sample
-Since `cv::cudacodec::VideoWriter` supports only deprecated `nvcuvnenc` library, It's currently (*OpenCV* 4.3) impossible to encode `cv::cuda::GpuMat` frames without copying them to CPU (`cv::Mat`) through `cudacodec` module. To circumvent this, you can use this sample to encode `cv::cuda::GpuMat` using  *NVIDIA VIDEO SDK* directly. 
+Since `cv::cudacodec::VideoWriter` supports only deprecated `nvcuvnenc` library, It's currently (*OpenCV* 4.7) impossible to encode `cv::cuda::GpuMat` frames without copying them to CPU (`cv::Mat`) through `cudacodec` module. To circumvent this, you can use this sample to encode `cv::cuda::GpuMat` using  *NVIDIA VIDEO SDK* directly. 
 
 ## Setup
 * Copy `AppEncOpenCV` folder into `Video_Codec_SDK_*.*.*/Samples/AppEncode/`  
@@ -10,7 +10,7 @@ Since `cv::cudacodec::VideoWriter` supports only deprecated `nvcuvnenc` library,
 # Usage
 `./AppEncOpenCV -i path_to_image.jpg -o video.h264`
 
-Since the output is just the raw encoded audio, we need to mux it into some video container to view it in most media players, so just run
+Since the output is just the raw encoded video, we need to put it into some video container to view it in most media players, so just run
 
 `ffmpeg -i video.h264 video.mp4`
 
